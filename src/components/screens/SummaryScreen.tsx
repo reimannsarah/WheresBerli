@@ -15,6 +15,10 @@ const SummaryScreen = () => {
     (state) => state.pet
   );
 
+  const { petName } = useAppSelector(
+    (state) => state.pet.petName
+  );
+
   const [distance, setDistance] = useState<number | null>(null);
 
   const toRadians = useCallback((degrees: number) => (degrees * Math.PI) / 180, []);
@@ -84,7 +88,7 @@ const SummaryScreen = () => {
         Location: {state.location.lat}, {state.location.lng}
       </p>
       <p>
-        You are {distanceInSelectedUnit} {unit} away from your pet!
+        You are {distanceInSelectedUnit} {unit} away from {petName}!
       </p>
       <button onClick={() => navigate("/")}>Start Over</button>
       <UserToPetMap />
