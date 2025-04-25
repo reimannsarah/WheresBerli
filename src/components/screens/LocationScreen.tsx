@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Map from "../../Map";
+import { useDispatch } from "react-redux";
+import { setPetLocation } from "../../app/store/slices/petSlice";
 
 const LocationScreen = () => {
   const [center, setCenter] = useState<{ lat: number; lng: number }>({
@@ -12,6 +14,7 @@ const LocationScreen = () => {
 
   const { state } = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -27,6 +30,7 @@ const LocationScreen = () => {
   }, []);
 
   const handleSaveLocation = () => {
+    dispatch(setPetLocation({ latitude: selectedLocation!.lat, longitude: selectedLocation!.lng }));
     if (selectedLocation) {
       navigate(`/summary`, { state: { petName: state.petName, location: selectedLocation } });
     }
