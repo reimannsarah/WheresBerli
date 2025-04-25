@@ -30,7 +30,7 @@ function App() {
   });
 
   return (
-    <div>
+    <div className="main-container">
       <Router>
         <Routes>
           <Route path="/" element={<PetNameScreen />} />

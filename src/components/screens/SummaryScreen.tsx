@@ -96,8 +96,8 @@ const SummaryScreen = () => {
       <p>
         You are {distanceInSelectedUnit} {unit} away from {petName}!
       </p>
-      <button onClick={startOver}>Start Over</button>
       <UserToPetMap />
+      <button className="big-btn" onClick={startOver}>Start Over</button>
     </div>
   );
 };

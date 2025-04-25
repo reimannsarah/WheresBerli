@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setPetName } from "../../app/store/slices/petSlice";
+import bird from "../../assets/bird.gif"
 
 const PetNameScreen = () => {
   const [petName, setPetNameState] = useState("");
@@ -20,27 +21,41 @@ const PetNameScreen = () => {
   const units = ["miles", "kilometers", "worms", "whiskers", "paws"];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <div style={{ }}>WHERE'S BERLI?</div>
-      <h2>Enter your pet's name</h2>
-      <form onSubmit={handleNameSubmit}>
-        <input
-          type="text"
-          value={petName}
-          onChange={(e) => setPetNameState(e.target.value)}
-          placeholder="Enter pet's name"
-        />
-        <br />
-        <label htmlFor="unit">Choose a unit of measurement:</label>
-        <br />
-        <select id="unit" value={unit} onChange={(e) => setUnit(e.target.value)}>
-          {units.map((u) => (
-            <option key={u} value={u}>{u}</option>
-          ))}
-        </select>
-        <br />
-        <button type="submit" disabled={!petName}>Next</button>
-      </form>
+    <div>
+      <div className="title">WHERE'S BERLI?</div>
+      <div>
+        <form onSubmit={handleNameSubmit}>
+          <div className="input-container">
+            <label htmlFor="petName">Pet's Name:</label>
+            <input
+              type="text"
+              value={petName}
+              onChange={(e) => setPetNameState(e.target.value)}
+              placeholder="Enter pet's name"
+            />
+          </div>
+          <div className="input-container">
+          <label htmlFor="unit">Choose a unit of measurement:</label>
+          <select
+            id="unit"
+            value={unit}
+            onChange={(e) => setUnit(e.target.value)}
+          >
+            {units.map((u) => (
+              <option key={u} value={u}>
+                {u}
+              </option>
+            ))}
+          </select>
+          </div>
+          <img src={bird} alt="bird" width={200} className="bird-gif" />
+          <div className="btn-container">
+          <button className="big-btn" type="submit" disabled={!petName}>
+            Next {"->"}
+          </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

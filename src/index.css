@@ -1,11 +1,14 @@
+@import url("https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Cascadia Mono", Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  font-size: 1.75rem;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: rgba(0, 86, 44, 0.87);
+  background-color: #f4d0d0;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,56 +16,134 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
+.main-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  margin: 0 auto;
+  max-width: 1280px;
+}
+
+.title {
+  font-family: "JetBrains Mono", "Cascadia Mono", Avenir, Helvetica, Arial, sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0b07fe;
+  text-align: left;
+  border-bottom: #0b07fe 1px solid;
+}
+
+.btn-container {
+  position: absolute;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  top: 45vh;
+  left: 40%;
+}
+
+.big-btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0;
+  font-size: 1.25rem;
   font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  color: #fff;
+  background-color: #0b07fe;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  font-family: "JetBrains Mono", "Cascadia Mono", Avenir, Helvetica, Arial, sans-serif;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* button disabled styling */
+.big-btn:disabled {
+  background-color: #9f9ed8;
+  cursor: not-allowed;
+}
+
+input {
+  padding: 0.3rem;
+  margin: 0.5rem 0;
+  font-size: .75rem;
+  font-weight: 400;
+  color: #000;
+  background-color: #fff;
+  border: 3px solid #000000;
+  transition: border-color 0.3s ease;
+  cursor: text;
+  font-family: "JetBrains Mono", "Cascadia Mono", Avenir, Helvetica, Arial, sans-serif;
+}
+
+input:focus {
+  border-color: #0b07fe;
+  outline: none;
+}
+
+select {
+  padding: 0.3rem;
+  margin: 0.5rem 0;
+  font-size: .75rem;
+  font-weight: 400;
+  color: #000;
+  background-color: #fff;
+  border: 3px solid #000000;
+  transition: border-color 0.3s ease;
+  cursor: pointer;
+  font-family: "JetBrains Mono", "Cascadia Mono", Avenir, Helvetica, Arial, sans-serif;
+}
+
+.input-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+.bird-gif {
+  position: absolute;
+  height: auto;
+  margin: 0 auto;
+  left: 20%
+}
+
+.location-screen-title {
+  font-family: "JetBrains Mono", "Cascadia Mono", Avenir, Helvetica, Arial, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0b07fe;
+  border-bottom: #0b07fe 1px solid;
+  display: flex;
+  align-items: center;
+}
+
+.location-btn {
+  display: inline-block;
+  padding: 0 0.5rem;
+  margin: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #fff;
+  background-color: #006a5e;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  font-family: "JetBrains Mono", "Cascadia Mono", Avenir, Helvetica, Arial, sans-serif;
+}
+
+.location-btn:disabled {
+  background-color: #9f9ed8;
+  cursor: not-allowed;
+}
+
+.map-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100vw;
 }

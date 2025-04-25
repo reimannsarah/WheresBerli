@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Map from "../../Map";
 import { useDispatch } from "react-redux";
 import { setPetLocation } from "../../app/store/slices/petSlice";
+import cat from "../../assets/cat.gif";
 
 const LocationScreen = () => {
   const [center, setCenter] = useState<{ lat: number; lng: number }>({
@@ -50,14 +51,21 @@ const LocationScreen = () => {
 
   return (
     <div>
-      <h2>{`Select a location for ${state.petName}`}</h2>
+      <div className={"location-screen-title"}>
+      <h2>{`WHERE THE HECK IS ${state.petName.toUpperCase()}?`}</h2>
+      <button className="location-btn" onClick={handleSaveLocation} disabled={!selectedLocation}>
+        {"->"}
+      </button>
+      </div>
+      <div className="map-container">
+      <img src={cat} width={200} />
+      <div style={{ width: "50%"}}>
       <Map
         center={center}
         onLocationSelect={(location) => setSelectedLocation(location)}
       />
-      <button onClick={handleSaveLocation} disabled={!selectedLocation}>
-        Save Location
-      </button>
+      </div>
+      </div>
     </div>
   );
 };
