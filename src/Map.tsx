@@ -1,68 +1,62 @@
+import React, { useState, useEffect, useRef } from "react";
 import { GoogleMap, LoadScript, Marker, Autocomplete } from "@react-google-maps/api";
-import { useState, useCallback, useRef } from "react";
 
 const containerStyle = {
   width: "100%",
   height: "400px",
 };
 
-const defaultCenter = {
-  lat: 37.7749,
-  lng: -122.4194,
-};
+interface MapProps {
+  onLocationSelect: (location: { lat: number; lng: number }) => void;
+  center: { lat: number; lng: number };
+}
 
-const Map = () => {
-  const [center, setCenter] = useState<{ lat: number; lng: number }>(defaultCenter);
-  const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>([]);
+const Map: React.FC<MapProps> = ({ onLocationSelect, center }) => {
+  const [mapCenter, setMapCenter] = useState(center);
+  const [marker, setMarker] = useState<{ lat: number; lng: number } | null>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const handlePlaceChanged = () => {
+  useEffect(() => {
+    setMapCenter(center);
+  }, [center]);
+
+  const onPlaceChanged = () => {
     if (autocompleteRef.current) {
       const place = autocompleteRef.current.getPlace();
-      if (place.geometry?.location) {
-        const location = {
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng(),
-        };
-        setCenter(location);
-        setMarkers([...markers, location]);
+      if (place.geometry && place.geometry.location) {
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+        const location = { lat, lng };
+        setMapCenter(location);
+        setMarker(location);
+        onLocationSelect(location);
       }
     }
   };
 
-  const handleLoad = (autocomplete: google.maps.places.Autocomplete) => {
-    autocompleteRef.current = autocomplete;
-  };
-
-  const handleClick = useCallback((event: google.maps.MapMouseEvent) => {
-    const latLng = event.latLng;
-    if (!latLng) return;
-    setMarkers((current) => [...current, { lat: latLng.lat(), lng: latLng.lng() }]);
-  }, []);
-
   return (
-    <LoadScript
-      googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-      libraries={["places"]}
-    >
-      <div style={{ marginBottom: "1rem" }}>
-        <Autocomplete onLoad={handleLoad} onPlaceChanged={handlePlaceChanged}>
+    <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} libraries={["places"]}>
+      <div style={{ marginBottom: "10px" }}>
+        <Autocomplete
+          onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
+          onPlaceChanged={onPlaceChanged}
+        >
           <input
             type="text"
-            placeholder="Search for a place"
-            style={{ width: "300px", height: "40px", fontSize: "16px", padding: "0 10px" }}
+            placeholder="Search for a location"
+            ref={inputRef}
+            style={{ width: "100%", padding: "8px" }}
           />
         </Autocomplete>
       </div>
+
       <GoogleMap
         mapContainerStyle={containerStyle}
-        center={center}
+        center={mapCenter}
         zoom={12}
-        onClick={handleClick}
       >
-        {markers.map((position, index) => (
-          <Marker key={index} position={position} />
-        ))}
+        {marker && <Marker position={marker} />}
       </GoogleMap>
     </LoadScript>
   );

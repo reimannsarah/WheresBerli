@@ -1,12 +1,19 @@
-import Map from "./Map"
 import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import PetNameScreen from "./components/screens/PetNameScreen";
+import LocationScreen from "./components/screens/LocationScreen";
+import SummaryScreen from "./components/screens/SummaryScreen";
 
 function App() {
-
   return (
     <div>
-      <h1>My Map</h1>
-      <Map />
+      <Router>
+        <Routes>
+          <Route path="/" element={<PetNameScreen />} />
+          <Route path="/location" element={<LocationScreen />} />
+          <Route path="/summary" element={<SummaryScreen />} />
+        </Routes>
+      </Router>
     </div>
   );
 }
