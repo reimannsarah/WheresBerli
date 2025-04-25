@@ -33,6 +33,7 @@ const UserToPetMap = () => {
   const userLng = useAppSelector((state) => state.location.userLongitude);
   const petLat = useAppSelector((state) => state.pet.petLatitude);
   const petLng = useAppSelector((state) => state.pet.petLongitude);
+  const { petName } = useAppSelector((state) => state.pet);
 
   const userLocation = { lat: userLat ?? 0, lng: userLng ?? 0 };
   const petLocation = { lat: petLat ?? 0, lng: petLng ?? 0 };
@@ -48,8 +49,8 @@ const UserToPetMap = () => {
         zoom={4}
         options={{ styles: mapStyle, disableDefaultUI: true }}
       >
-        <Marker position={userLocation} label="A" />
-        <Marker position={petLocation} label="B" />
+        <Marker position={userLocation} label="You" />
+        <Marker position={petLocation} label={petName} />
         <Polyline
           path={[userLocation, petLocation]}
           options={{

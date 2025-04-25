@@ -1,13 +1,18 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { setPetName } from "../../app/store/slices/petSlice";
 
 const PetNameScreen = () => {
-  const [petName, setPetName] = useState("");
+  const [petName, setPetNameState] = useState("");
   const [unit, setUnit] = useState("miles");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleNameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    dispatch(setPetName(petName));
+
     if (petName) {
       navigate(`/location`, { state: { petName, unit } });
     }
@@ -22,7 +27,7 @@ const PetNameScreen = () => {
         <input
           type="text"
           value={petName}
-          onChange={(e) => setPetName(e.target.value)}
+          onChange={(e) => setPetNameState(e.target.value)}
           placeholder="Enter pet's name"
         />
         <br />

@@ -16,7 +16,7 @@ const SummaryScreen = () => {
   );
 
   const { petName } = useAppSelector(
-    (state) => state.pet.petName
+    (state) => state.pet
   );
 
   const [distance, setDistance] = useState<number | null>(null);
