@@ -20,7 +20,8 @@ const PetNameScreen = () => {
   const units = ["miles", "kilometers", "worms", "whiskers", "paws"];
 
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <div style={{ }}>WHERE'S BERLI?</div>
       <h2>Enter your pet's name</h2>
       <form onSubmit={handleNameSubmit}>
         <input

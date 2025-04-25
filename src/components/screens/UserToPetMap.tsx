@@ -6,6 +6,7 @@ import {
 } from "@react-google-maps/api";
 import { useAppSelector } from "../../app/hooks";
 import { useCallback, useMemo, useRef } from "react";
+import berli from "../../assets/tinyBerli.png"
 
 const containerStyle = {
   width: "100%",
@@ -62,7 +63,7 @@ const UserToPetMap = () => {
         options={{ styles: mapStyle, disableDefaultUI: true }}
       >
         <Marker position={userLocation} label="You" />
-        <Marker position={petLocation} label={petName} />
+        <Marker position={petLocation} label={petName} icon={berli} />
         <Polyline
           path={[userLocation, petLocation]}
           options={{
