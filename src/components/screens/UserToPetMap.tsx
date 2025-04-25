@@ -1,18 +1,13 @@
 import {
   GoogleMap,
   LoadScript,
-  Marker,
+  OverlayView,
   Polyline,
 } from "@react-google-maps/api";
 import { useAppSelector } from "../../app/hooks";
-import { useCallback, useMemo, useRef } from "react";
+import { useMemo } from "react";
 
-const containerStyle = {
-  width: "100%",
-  height: "400px",
-};
-
-// Pale map style (from Snazzy Maps)
+// Custom map style
 const mapStyle = [
   { elementType: "geometry", stylers: [{ color: "#ebe3cd10" }] },
   { elementType: "labels.text.fill", stylers: [{ color: "#52373510" }] },
@@ -29,6 +24,31 @@ const mapStyle = [
   },
 ];
 
+const containerStyle = {
+  width: "100%",
+  height: "400px",
+};
+
+const getCardinalDirection = (from: google.maps.LatLngLiteral, to: google.maps.LatLngLiteral) => {
+  const dLat = to.lat - from.lat;
+  const dLng = to.lng - from.lng;
+
+  const angle = Math.atan2(dLng, dLat) * (180 / Math.PI);
+  const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+  const index = Math.round(((angle + 360) % 360) / 45) % 8;
+
+  return directions[index];
+};
+
+const SvgLabel = ({ label }: { label: string }) => (
+  <svg width="60" height="60" viewBox="0 0 60 60">
+    <circle cx="30" cy="30" r="20" fill="#FF5733" opacity={0.8} />
+    <text x="30" y="35" fontSize="14" fill="white" textAnchor="middle">
+      {label}
+    </text>
+  </svg>
+);
+
 const UserToPetMap = () => {
   const userLat = useAppSelector((state) => state.location.userLatitude);
   const userLng = useAppSelector((state) => state.location.userLongitude);
@@ -39,15 +59,7 @@ const UserToPetMap = () => {
   const userLocation = useMemo(() => ({ lat: userLat ?? 0, lng: userLng ?? 0 }), [userLat, userLng]);
   const petLocation = useMemo(() => ({ lat: petLat ?? 0, lng: petLng ?? 0 }), [petLat, petLng]);
 
-  const mapRef = useRef<google.maps.Map | null>(null);
-
-  const onLoad = useCallback((map: google.maps.Map) => {
-    mapRef.current = map;
-    const bounds = new window.google.maps.LatLngBounds();
-    bounds.extend(userLocation);
-    bounds.extend(petLocation);
-    map.fitBounds(bounds, 50);
-  }, [userLocation, petLocation]);
+  const direction = getCardinalDirection(petLocation, userLocation);
 
   return (
     <LoadScript
@@ -56,21 +68,42 @@ const UserToPetMap = () => {
     >
       <GoogleMap
         mapContainerStyle={containerStyle}
-        onLoad={onLoad}
-        center={userLocation}
-        zoom={4}
-        options={{ styles: mapStyle, disableDefaultUI: true }}
+        center={petLocation}
+        zoom={10}
+        options={{
+          styles: mapStyle,
+          disableDefaultUI: true,
+          gestureHandling: "greedy",
+        }}
       >
-        <Marker position={userLocation} label="You" />
-        <Marker position={petLocation} label={petName} />
+        <OverlayView position={userLocation} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}>
+          <SvgLabel label="You" />
+        </OverlayView>
+        <OverlayView position={petLocation} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}>
+          <SvgLabel label={petName} />
+        </OverlayView>
+
         <Polyline
-          path={[userLocation, petLocation]}
+          path={[petLocation, userLocation]}
           options={{
-            strokeColor: "#FF5733",
-            strokeOpacity: 1,
-            strokeWeight: 3,
+            strokeOpacity: 0,
+            icons: [
+              {
+                icon: {
+                  path: "M 0,-1 0,1",
+                  strokeOpacity: 1,
+                  strokeColor: "#FF5733",
+                  scale: 4,
+                },
+                offset: "0",
+                repeat: "20px",
+              },
+            ],
           }}
         />
+        {/* Optional: Direction label */}
+        {/* Could also show this as a tooltip, or text on the line mid-point */}
+        {/* <OverlayView position={midpoint(petLocation, userLocation)}><div>{direction}</div></OverlayView> */}
       </GoogleMap>
     </LoadScript>
   );
