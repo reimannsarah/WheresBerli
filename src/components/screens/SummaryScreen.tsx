@@ -1,4 +1,5 @@
 import { useLocation } from "react-router-dom";
+import UserToPetMap from "./UserToPetMap";
 
 const SummaryScreen = () => {
   const { state } = useLocation();
@@ -10,6 +11,7 @@ const SummaryScreen = () => {
       <p>
         Location: {state.location.lat}, {state.location.lng}
       </p>
+      <UserToPetMap />
     </div>
   );
 };

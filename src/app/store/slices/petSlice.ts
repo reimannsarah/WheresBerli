@@ -15,7 +15,7 @@ const initialState: PetState = {
 };
 
 export const petSlice = createSlice({
-  name: 'location',
+  name: 'pet',
   initialState,
   reducers: {
     setPetName: (state, action: PayloadAction<string>) => {

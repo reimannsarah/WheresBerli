@@ -6,7 +6,6 @@ import SummaryScreen from "./components/screens/SummaryScreen";
 import { setLocation } from "./app/store/slices/locationSlice";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { store } from "./app/store";
 
 function App() {
   const dispatch = useDispatch();
