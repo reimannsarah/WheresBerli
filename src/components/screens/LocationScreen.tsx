@@ -10,7 +10,10 @@ const LocationScreen = () => {
     lng: -122.4194,
   });
 
-  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
 
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -20,7 +23,10 @@ const LocationScreen = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setCenter({ lat: position.coords.latitude, lng: position.coords.longitude });
+          setCenter({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
         },
         (error) => {
           console.error("Error getting user location:", error);
@@ -32,7 +38,13 @@ const LocationScreen = () => {
   const handleSaveLocation = () => {
     dispatch(setPetLocation({ latitude: selectedLocation!.lat, longitude: selectedLocation!.lng }));
     if (selectedLocation) {
-      navigate(`/summary`, { state: { petName: state.petName, location: selectedLocation } });
+      navigate(`/summary`, {
+        state: {
+          petName: state.petName,
+          location: selectedLocation,
+          unit: state.unit,
+        },
+      });
     }
   };
 
