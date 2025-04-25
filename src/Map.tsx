@@ -1,5 +1,12 @@
-import { GoogleMap, LoadScript, Marker, Autocomplete } from "@react-google-maps/api";
-import { useState, useCallback, useRef } from "react";
+import {
+  GoogleMap,
+  LoadScript,
+  Marker,
+  Autocomplete,
+} from "@react-google-maps/api";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { setLocation } from "./app/store/slices/locationSlice";
 
 const containerStyle = {
   width: "100%",
@@ -12,9 +19,30 @@ const defaultCenter = {
 };
 
 const Map = () => {
-  const [center, setCenter] = useState<{ lat: number; lng: number }>(defaultCenter);
+  const [center, setCenter] = useState<{ lat: number; lng: number }>(
+    defaultCenter
+  );
   const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>([]);
+  const dispatch = useDispatch();
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setCenter({ lat: latitude, lng: longitude });
+          setMarkers([{ lat: latitude, lng: longitude }]);
+          dispatch(setLocation({ latitude, longitude }));
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+        }
+      );
+    } else {
+      console.warn("Geolocation is not supported by this browser.");
+    }
+  }, [dispatch]);
 
   const handlePlaceChanged = () => {
     if (autocompleteRef.current) {
@@ -37,7 +65,10 @@ const Map = () => {
   const handleClick = useCallback((event: google.maps.MapMouseEvent) => {
     const latLng = event.latLng;
     if (!latLng) return;
-    setMarkers((current) => [...current, { lat: latLng.lat(), lng: latLng.lng() }]);
+    setMarkers((current) => [
+      ...current,
+      { lat: latLng.lat(), lng: latLng.lng() },
+    ]);
   }, []);
 
   return (
