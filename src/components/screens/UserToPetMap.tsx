@@ -1,53 +1,21 @@
-import {
-  GoogleMap,
-  LoadScript,
-  OverlayView,
-  Polyline,
-} from "@react-google-maps/api";
 import { useAppSelector } from "../../app/hooks";
-import { useMemo } from "react";
+import { haversineDistance } from "../../app/utils/haversine";
 
-// Custom map style
-const mapStyle = [
-  { elementType: "geometry", stylers: [{ color: "#ebe3cd10" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#52373510" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#f5f1e6" }] },
-  {
-    featureType: "road",
-    elementType: "geometry",
-    stylers: [{ color: "#f5f1e610" }],
-  },
-  {
-    featureType: "water",
-    elementType: "geometry",
-    stylers: [{ color: "#c9c9c910" }],
-  },
-];
+const getCardinalDirection = (
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+) => {
+  const dLat = lat2 - lat1;
+  const dLon = lon2 - lon1;
 
-const containerStyle = {
-  width: "100%",
-  height: "400px",
-};
-
-const getCardinalDirection = (from: google.maps.LatLngLiteral, to: google.maps.LatLngLiteral) => {
-  const dLat = to.lat - from.lat;
-  const dLng = to.lng - from.lng;
-
-  const angle = Math.atan2(dLng, dLat) * (180 / Math.PI);
-  const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+  const angle = Math.atan2(dLon, dLat) * (180 / Math.PI);
+  const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
   const index = Math.round(((angle + 360) % 360) / 45) % 8;
 
   return directions[index];
 };
-
-const SvgLabel = ({ label }: { label: string }) => (
-  <svg width="60" height="60" viewBox="0 0 60 60">
-    <circle cx="30" cy="30" r="20" fill="#FF5733" opacity={0.8} />
-    <text x="30" y="35" fontSize="14" fill="white" textAnchor="middle">
-      {label}
-    </text>
-  </svg>
-);
 
 const UserToPetMap = () => {
   const userLat = useAppSelector((state) => state.location.userLatitude);
@@ -56,56 +24,97 @@ const UserToPetMap = () => {
   const petLng = useAppSelector((state) => state.pet.petLongitude);
   const { petName } = useAppSelector((state) => state.pet);
 
-  const userLocation = useMemo(() => ({ lat: userLat ?? 0, lng: userLng ?? 0 }), [userLat, userLng]);
-  const petLocation = useMemo(() => ({ lat: petLat ?? 0, lng: petLng ?? 0 }), [petLat, petLng]);
+  const distance = haversineDistance(userLat, userLng, petLat, petLng); // Distance between user and pet
+  const direction = getCardinalDirection(petLat, petLng, userLat, userLng); // Cardinal direction from pet to user
 
-  const direction = getCardinalDirection(petLocation, userLocation);
+  // Calculate the angle between pet and user for line direction
+  const angle = Math.atan2(userLng - petLng, userLat - petLat) * (180 / Math.PI); // Angle for line rotation
+
+  // Calculate user position based on angle and distance
+  const userOffsetX = distance * Math.cos(angle * (Math.PI / 180)) * 10; // X offset based on angle and distance
+  const userOffsetY = distance * Math.sin(angle * (Math.PI / 180)) * 10; // Y offset based on angle and distance
 
   return (
-    <LoadScript
-      googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-      libraries={["places"]}
+    <div
+      style={{
+        position: "relative",
+        width: "100%",
+        height: "600px",
+        backgroundColor: "#ebe3cd",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
     >
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={petLocation}
-        zoom={10}
-        options={{
-          styles: mapStyle,
-          disableDefaultUI: true,
-          gestureHandling: "greedy",
+      {/* Pet Pin in the center */}
+      <div
+        style={{
+          position: "absolute",
+          width: "30px",
+          height: "30px",
+          borderRadius: "50%",
+          backgroundColor: "#FF5733",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "white",
+          fontSize: "12px",
         }}
       >
-        <OverlayView position={userLocation} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}>
-          <SvgLabel label="You" />
-        </OverlayView>
-        <OverlayView position={petLocation} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}>
-          <SvgLabel label={petName} />
-        </OverlayView>
+        {petName}
+      </div>
 
-        <Polyline
-          path={[petLocation, userLocation]}
-          options={{
-            strokeOpacity: 0,
-            icons: [
-              {
-                icon: {
-                  path: "M 0,-1 0,1",
-                  strokeOpacity: 1,
-                  strokeColor: "#FF5733",
-                  scale: 4,
-                },
-                offset: "0",
-                repeat: "20px",
-              },
-            ],
-          }}
-        />
-        {/* Optional: Direction label */}
-        {/* Could also show this as a tooltip, or text on the line mid-point */}
-        {/* <OverlayView position={midpoint(petLocation, userLocation)}><div>{direction}</div></OverlayView> */}
-      </GoogleMap>
-    </LoadScript>
+      {/* Line from Pet to User */}
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          width: `${distance * 10}px`, // Scale the distance for visualization
+          height: "2px", // Line thickness
+          backgroundColor: "#FF5733", // Line color
+          transformOrigin: "left", // Make sure the line starts from the pet's position
+          transform: `rotate(${angle}deg)`, // Rotate the line to point towards the user
+        }}
+      />
+
+      {/* User Pin at the end of the line */}
+      <div
+        style={{
+          position: "absolute",
+          top: `calc(50% + ${userOffsetY}px - 15px)`, // Adjust top so user pin is centered on the line end
+          left: `calc(50% + ${userOffsetX}px - 15px)`, // Adjust left so user pin is centered on the line end
+          width: "30px",
+          height: "30px",
+          borderRadius: "50%",
+          backgroundColor: "#33FF57",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "white",
+          fontSize: "12px",
+        }}
+      >
+        You
+      </div>
+
+      {/* Display the direction and distance */}
+      <div
+        style={{
+          position: "absolute",
+          top: "10px",
+          left: "10px",
+          backgroundColor: "white",
+          padding: "5px",
+          borderRadius: "5px",
+          fontSize: "14px",
+        }}
+      >
+        Direction: {direction}
+        <br />
+        Distance: {distance.toFixed(2)} km
+      </div>
+    </div>
   );
 };
 
