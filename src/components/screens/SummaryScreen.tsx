@@ -2,10 +2,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "../../app/hooks";
 import UserToPetMap from "./UserToPetMap";
+import { useDispatch } from "react-redux";
+import { clearLocation } from "../../app/store/slices/locationSlice";
+import { clearPet } from "../../app/store/slices/petSlice";
 
 const SummaryScreen = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const { userLatitude, userLongitude } = useAppSelector(
     (state) => state.location
@@ -63,8 +67,6 @@ const SummaryScreen = () => {
     return distanceInKm * 1000 * 39.3701; // Convert km to inches
   };
 
-  // Define unit conversions with appropriate lengths (in inches)
-  // Define unit conversions with appropriate lengths (in inches)
   const unitConversions: { [key: string]: number } = {
     kilometers: 39370.1,
     meters: 39.3701,
@@ -80,6 +82,11 @@ const SummaryScreen = () => {
     2
   );
 
+  const startOver = () => {
+    dispatch(clearPet());
+    navigate("/");
+  }
+
   return (
     <div>
       <h2>Summary</h2>
@@ -90,7 +97,7 @@ const SummaryScreen = () => {
       <p>
         You are {distanceInSelectedUnit} {unit} away from {petName}!
       </p>
-      <button onClick={() => navigate("/")}>Start Over</button>
+      <button onClick={startOver}>Start Over</button>
       <UserToPetMap />
     </div>
   );

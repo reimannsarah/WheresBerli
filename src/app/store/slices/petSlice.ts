@@ -37,6 +37,6 @@ export const petSlice = createSlice({
   },
 });
 
-export const { setPetName, setPetType, setPetLocation } = petSlice.actions;
+export const { setPetName, setPetType, setPetLocation, clearPet } = petSlice.actions;
 
 export default petSlice.reducer;

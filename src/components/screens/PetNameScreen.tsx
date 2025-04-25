@@ -11,9 +11,8 @@ const PetNameScreen = () => {
 
   const handleNameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(setPetName(petName));
-
     if (petName) {
+      dispatch(setPetName(petName));
       navigate(`/location`, { state: { petName, unit } });
     }
   };
