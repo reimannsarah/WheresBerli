@@ -1,54 +1,58 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useAppSelector } from "../../app/hooks";
+import UserToPetMap from "./UserToPetMap";
 
 const SummaryScreen = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
 
+  const { userLatitude, userLongitude } = useAppSelector(
+    (state) => state.location
+  );
+
+  const { petLatitude, petLongitude } = useAppSelector(
+    (state) => state.pet
+  );
+
   const [distance, setDistance] = useState<number | null>(null);
 
-  const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
+  const toRadians = useCallback((degrees: number) => (degrees * Math.PI) / 180, []);
 
-  const haversineDistance = (
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
-  ) => {
-    const R = 6371; // Radius of Earth in km
-    const dLat = toRadians(lat2 - lat1);
-    const dLon = toRadians(lon2 - lon1);
+  const haversineDistance = useCallback(
+    (
+      lat1: number,
+      lon1: number,
+      lat2: number,
+      lon2: number
+    ) => {
+      const R = 6371; // Radius of Earth in km
+      const dLat = toRadians(lat2 - lat1);
+      const dLon = toRadians(lon2 - lon1);
 
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRadians(lat1)) *
-        Math.cos(toRadians(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRadians(lat1)) *
+          Math.cos(toRadians(lat2)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
 
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    return R * c; // Distance in km
-  };
-
-  // Mock user location (this can be replaced with real geolocation logic later)
-  const mockUserLocation = {
-    lat: 37.7749, // Mocked latitude (San Francisco)
-    lng: -122.4194, // Mocked longitude (San Francisco)
-  };
+      return R * c; // Distance in km
+    },
+    [toRadians]
+  );
 
   useEffect(() => {
-    // Use the mocked user location
-    const { lat, lng } = mockUserLocation;
-    // Use the haversine formula to calculate the distance
     const calculatedDistance = haversineDistance(
-      lat,
-      lng,
-      state.location.lat,
-      state.location.lng
+      userLatitude,
+      userLongitude,
+      petLatitude,
+      petLongitude
     );
     setDistance(calculatedDistance);
-  }, [state.location]);
+  }, [userLatitude, userLongitude, petLatitude, petLongitude, haversineDistance]);
 
   // Convert km to inches
   const kmToInches = (distanceInKm: number) => {
@@ -83,6 +87,7 @@ const SummaryScreen = () => {
         You are {distanceInSelectedUnit} {unit} away from your pet!
       </p>
       <button onClick={() => navigate("/")}>Start Over</button>
+      <UserToPetMap />
     </div>
   );
 };

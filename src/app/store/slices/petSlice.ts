@@ -3,15 +3,15 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 type PetState = {
   petName: string;
   petType: string;
-  petLongitude: number | null;
-  petLatitude: number | null;
+  petLongitude: number;
+  petLatitude: number;
 };
 
 const initialState: PetState = {
   petName: '',
   petType: '',
-  petLongitude: null,
-  petLatitude: null,
+  petLongitude: 0,
+  petLatitude: 0,
 };
 
 export const petSlice = createSlice({
@@ -31,8 +31,8 @@ export const petSlice = createSlice({
     clearPet: (state) => {
       state.petName = '';
       state.petType = '';
-      state.petLongitude = null;
-      state.petLatitude = null;
+      state.petLongitude = 0;
+      state.petLatitude = 0;
     }
   },
 });

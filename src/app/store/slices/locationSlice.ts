@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type LocationState = {
-  userLatitude: number | null;
-  userLongitude: number | null;
+  userLatitude: number;
+  userLongitude: number;
 };
 
 const initialState: LocationState = {
-  userLatitude: null,
-  userLongitude: null,
+  userLatitude: 0,
+  userLongitude: 0,
 };
 
 export const locationSlice = createSlice({
@@ -19,8 +19,8 @@ export const locationSlice = createSlice({
       state.userLongitude = action.payload.longitude;
     },
     clearLocation: (state) => {
-      state.userLatitude = null;
-      state.userLongitude = null;
+      state.userLatitude = 0;
+      state.userLongitude = 0;
     },
   },
 });
