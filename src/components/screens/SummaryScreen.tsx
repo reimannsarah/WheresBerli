@@ -1,10 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "../../app/hooks";
 import UserToPetMap from "./UserToPetMap";
 import { useDispatch } from "react-redux";
+import { clearLocation } from "../../app/store/slices/locationSlice";
 import { clearPet } from "../../app/store/slices/petSlice";
-import { haversineDistance } from "../../app/utils/haversine";
 
 const SummaryScreen = () => {
   const { state } = useLocation();
@@ -25,6 +25,32 @@ const SummaryScreen = () => {
 
   const [distance, setDistance] = useState<number | null>(null);
 
+  const toRadians = useCallback((degrees: number) => (degrees * Math.PI) / 180, []);
+
+  const haversineDistance = useCallback(
+    (
+      lat1: number,
+      lon1: number,
+      lat2: number,
+      lon2: number
+    ) => {
+      const R = 6371; // Radius of Earth in km
+      const dLat = toRadians(lat2 - lat1);
+      const dLon = toRadians(lon2 - lon1);
+
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRadians(lat1)) *
+          Math.cos(toRadians(lat2)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+      return R * c; // Distance in km
+    },
+    [toRadians]
+  );
 
   useEffect(() => {
     const calculatedDistance = haversineDistance(
@@ -34,7 +60,7 @@ const SummaryScreen = () => {
       petLongitude
     );
     setDistance(calculatedDistance);
-  }, [userLatitude, userLongitude, petLatitude, petLongitude]);
+  }, [userLatitude, userLongitude, petLatitude, petLongitude, haversineDistance]);
 
   // Convert km to inches
   const kmToInches = (distanceInKm: number) => {
