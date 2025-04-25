@@ -17,7 +17,7 @@ const PetNameScreen = () => {
     }
   };
 
-  const units = ["miles", "kilometers", "worms", "whiskers", "toenail clippings"];
+  const units = ["miles", "kilometers", "worms", "whiskers", "paws"];
 
   return (
     <div>

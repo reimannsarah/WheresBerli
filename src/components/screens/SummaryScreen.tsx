@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "../../app/hooks";
 import UserToPetMap from "./UserToPetMap";
 import { useDispatch } from "react-redux";
-import { clearLocation } from "../../app/store/slices/locationSlice";
 import { clearPet } from "../../app/store/slices/petSlice";
 
 const SummaryScreen = () => {
